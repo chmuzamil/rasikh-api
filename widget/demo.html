@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Rasikh widget demo</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 24px 16px;
+        background: #f8f4ea;
+        color: #1f1e1b;
+      }
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #131311;
+          color: #ece8df;
+        }
+        a {
+          color: #d8b25c;
+        }
+      }
+      section {
+        margin-bottom: 32px;
+      }
+      code {
+        font-size: 0.9em;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Rasikh widget</h1>
+    <p>
+      A verse or a hadith of the day from <a href="https://rasikh.ai">rasikh.ai</a>, with its
+      credit. Add a <code>div</code> and the script; nothing else is needed.
+    </p>
+
+    <section>
+      <h2>Verse of the day, Urdu</h2>
+      <div data-rasikh="ayah" data-lang="ur"></div>
+    </section>
+
+    <section>
+      <h2>Verse of the day, English</h2>
+      <div data-rasikh="ayah" data-lang="en"></div>
+    </section>
+
+    <section>
+      <h2>Hadith of the day, Urdu</h2>
+      <div data-rasikh="hadith" data-lang="ur"></div>
+    </section>
+
+    <section>
+      <h2>Hadith of the day, English</h2>
+      <div data-rasikh="hadith" data-lang="en"></div>
+    </section>
+
+    <script src="rasikh-widget.js" defer></script>
+  </body>
+</html>

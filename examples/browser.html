@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Rasikh search example</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 24px 16px;
+      }
+      form {
+        display: flex;
+        gap: 8px;
+      }
+      input {
+        flex: 1;
+        font-size: 16px;
+        padding: 8px;
+      }
+      li {
+        margin-bottom: 16px;
+      }
+      .credit {
+        font-size: 0.8em;
+        opacity: 0.75;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Search the Quran and hadith</h1>
+    <p>A plain web page calling the Rasikh API from the browser: no server, no key.</p>
+    <form id="f">
+      <input id="q" value="sabr" aria-label="Search words" />
+      <button>Search</button>
+    </form>
+    <p id="status"></p>
+    <ol id="results"></ol>
+
+    <script>
+      const API = "https://api.rasikh.ai/v1";
+
+      document.getElementById("f").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const q = document.getElementById("q").value.trim();
+        const list = document.getElementById("results");
+        const status = document.getElementById("status");
+        list.textContent = "";
+        if (!q) return;
+        status.textContent = "Searching…";
+        try {
+          const r = await fetch(`${API}/search?q=${encodeURIComponent(q)}&limit=5`);
+          if (!r.ok) throw new Error(`HTTP ${r.status}`);
+          const data = await r.json();
+          status.textContent = `Searches left today: ${r.headers.get("X-RateLimit-Remaining") ?? "?"}`;
+          // Print the response once to see every field it has
+          console.log(data);
+          for (const item of data.results ?? []) {
+            const li = document.createElement("li");
+            // Always set text with textContent, never innerHTML
+            const ref = document.createElement("strong");
+            ref.textContent = item.reference ?? "";
+            const arabic = document.createElement("p");
+            arabic.dir = "rtl";
+            arabic.lang = "ar";
+            arabic.textContent = item.text_ar ?? "";
+            // a verse has a list of translations; a hadith has one translation
+            const tr = item.translation ?? item.translations?.[0] ?? {};
+            const text = document.createElement("p");
+            text.dir = "auto";
+            text.textContent = tr.text ?? "";
+            const credit = document.createElement("p");
+            credit.className = "credit";
+            credit.dir = "auto";
+            credit.textContent =
+              item.type === "ayah"
+                ? `Quran text: Tanzil Project (tanzil.net) · Translation: ${tr.translator ?? ""} (Tanzil)`
+                : tr.attribution?.credit_en ||
+                  tr.attribution?.credit_ur ||
+                  (tr.translator ? `Translation: ${tr.translator}` : "");
+            li.append(ref, arabic, text, credit);
+            list.append(li);
+          }
+        } catch (err) {
+          status.textContent = `Could not search: ${err.message}`;
+        }
+      });
+    </script>
+  </body>
+</html>
